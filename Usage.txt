@@ -1,0 +1,14 @@
+Example:
+Enter the initial compartment count: 0
+Enter all species in the reaction network (e.g., 'G M P'): G M P
+Enter the number of reactions in reaction network: 4
+Enter reactants separated by '+' (Ex. 2 A + 1 B): 1 G + 0 M + 0 P
+Enter products separated by '+' (Ex. 2 A + 1 B): 1 G + 1 M + 0 P
+Enter reactants separated by '+' (Ex. 2 A + 1 B): 0 G + 1 M + 0 P
+Enter products separated by '+' (Ex. 2 A + 1 B): 0 G + 1 M + 1 P
+Enter reactants separated by '+' (Ex. 2 A + 1 B): 0 G + 1 M + 0 P
+Enter products separated by '+' (Ex. 2 A + 1 B): 0 G + 0 M + 0 P
+Enter reactants separated by '+' (Ex. 2 A + 1 B): 0 G + 0 M + 1 P
+Enter products separated by '+' (Ex. 2 A + 1 B): 0 G + 0 M + 0 P
+Enter network rates separated by spaces: 200 10 25 1
+Enter the end time: 8
