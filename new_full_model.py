@@ -5,11 +5,15 @@
 # initial: 3 compartments with 1 S inside
 # miu: random.randint(0,10)
 # end time: 5
-
 import numpy as np
 import random
 from collections import defaultdict
 import matplotlib.pyplot as plt
+
+# np.random.seed(19)
+
+# time = 50
+# iterations = 20
 
 def reaction_to_changes(reactants, products):
     changes = defaultdict(int)  # Initialize a dictionary to store changes for each species
@@ -27,15 +31,16 @@ def reaction_to_changes(reactants, products):
     # Convert the dictionary to a list
     changes_list = [(species, change) for species, change in changes.items()]
     result = [x[1] for x in changes_list]
-    print(f'The jumps of reaction: {result}')
+    #print(f'The jumps of reaction: {result}')
     return result
 
 
 def full_model(init_comp_count, init_species_counts, end_time):
     
     history = [0]
+    comp_count_hist = [init_comp_count]
     comp_counts = init_comp_count
-    reaction_rates = [1, 1, 0, 2.5, 1, 1] # ki, ke, kc, kf, kb, kd
+    reaction_rates = [1, 1, 0, 2, 1, 1] # ki, ke, kc, kf, kb, kd
     curr_state = init_species_counts
 
     S_counts = 0 # Total number of species S in all compartments
@@ -100,7 +105,7 @@ def full_model(init_comp_count, init_species_counts, end_time):
 
         # 1. if 0 -> C is chosen
         if reaction == 0:
-            print("0 -> C is chosen")
+            #print("0 -> C is chosen")
 
             # the initial state of the new compartment
             # TODO: should be determined by miu
@@ -110,14 +115,14 @@ def full_model(init_comp_count, init_species_counts, end_time):
         
         # 2. if C -> 0 is chosen
         elif reaction == 1:
-            print("C -> 0 is chosen")
+            #print("C -> 0 is chosen")
             del_comp = random.randint(0, comp_counts)
             S_counts -= curr_state[del_comp][0]
             curr_state.pop(del_comp)
         
         # 3. if 2C -> C is chosen
         elif reaction == 2:
-            print("2C -> C is chosen")
+            #print("2C -> C is chosen")
 
             # choose two different compartments uniformly at random
             two_random_comp = []
@@ -135,7 +140,7 @@ def full_model(init_comp_count, init_species_counts, end_time):
         
         # 4. if C -> 2C is chosen
         elif reaction == 3:
-            print("C -> 2C is chosen")
+            #print("C -> 2C is chosen")
             # for i in range(comp_counts - 1):
             #     newState = simGillespie(curr_state[i], network_jumps, network_rates, delta_t, reaction_count, reactants_list, species_list)
             #     curr_state[i] = newState
@@ -158,51 +163,62 @@ def full_model(init_comp_count, init_species_counts, end_time):
 
         # 5. if 0 -> S is chosen
         elif reaction == 4:
-            print("0 -> S is chosen")
+            #print("0 -> S is chosen")
             comp = random.randint(0, comp_counts-1)
             curr_state[comp][0] += 1
             S_counts += 1
 
         # 6. if S -> 0 is chosen
         elif reaction == 5:
-            print("S -> 0 is chosen")
+            #print("S -> 0 is chosen")
             comp = np.random.choice(np.arange(comp_counts), p = [curr_state[i][0] / S_counts for i in range(comp_counts)]) # TODO
             curr_state[comp][0] -= 1
             S_counts -= 1
 
 
-        print(f'Current state is {curr_state}')
+        #print(f'Current state is {curr_state}')
         history.append(S_counts)
-    
-    print(f'Time points: {time_points}')
+        comp_count_hist.append(comp_counts)
+
+    #print(f'Time points: {time_points}')
     # Create a basic line plot
-    plt.plot(time_points, history)
+    # plt.plot(time_points, history)
 
-    # Add labels and a title
-    plt.xlabel('time')
-    plt.ylabel('S_counts')
+    # Plot the first line
+    # plt.plot(time_points, history, label='S_counts', linestyle='-')
 
-    # Display the plot
-    plt.show()
-    return curr_state
+    # # Plot the second line
+    # plt.plot(time_points, comp_count_hist, label='Comp_counts', linestyle='-')
+
+    # # Add labels and a title
+    # plt.xlabel('time')
+    # plt.ylabel('counts')
+
+    # # Display the plot
+    # plt.show()
+    return S_counts, comp_counts
 
 
 def main():
     # Ask for user input and parse it
-    init_comp_count = int(input("Enter the initial compartment count: "))
-    species_input = input("Enter all species in the reaction network (e.g., 'G M P'): ")
-    species_list = species_input.split()
-    num_species = len(species_list)
+    #init_comp_count = int(input("Enter the initial compartment count: "))
+    init_comp_count = 3
+    #species_input = input("Enter all species in the reaction network (e.g., 'G M P'): ")
+    species_input = ["S"]
+    #species_list = species_input.split()
+    #num_species = len(species_list)
+
     # num_species = int(input("Enter the number of species in the reaction network: "))
 
     # Parse a list of initial species counts
-    if init_comp_count == 0:
-        init_species_counts = []
-    else:
-        init_species_counts = []
-        for i in range(init_comp_count):
-            input_species_counts = input(f"Enter initial species counts of compartment {i + 1} separated by spaces: ")
-            init_species_counts.append([int(x) for x in input_species_counts.split()])
+    # if init_comp_count == 0:
+    #     init_species_counts = []
+    # else:
+    #     init_species_counts = []
+    #     for i in range(init_comp_count):
+    #         input_species_counts = input(f"Enter initial species counts of compartment {i + 1} separated by spaces: ")
+    #         init_species_counts.append([int(x) for x in input_species_counts.split()])
+    init_species_counts = [[1], [1], [1]]
         
     # reaction_count = int(input("Enter the number of reactions in reaction network: "))
 
@@ -241,10 +257,20 @@ def main():
     # network_rates = input("Enter network rates separated by spaces: ")
     # network_rates = [float(x) for x in network_rates.split()]
 
-    end_time = float(input("Enter the end time: "))
+    #end_time = float(input("Enter the end time: "))
+    end_time = 10
 
-    output = full_model(init_comp_count, init_species_counts, end_time)
-    print(f"Final state is {output}")
+    return full_model(init_comp_count, init_species_counts, end_time)
+    # print(f"Final state is {output}")
 
 if __name__ == '__main__':
-    main()
+    S_hist = []
+    Comp_hist = []
+
+    for interation in range(500):
+        S_counts, comp_counts = main()
+        S_hist.append(S_counts)
+        Comp_hist.append(comp_counts)
+
+    print(f'Expected value of S counts: {np.mean(S_hist)}') 
+    print(f'Expected value of Comp counts: {np.mean(Comp_hist)}')
